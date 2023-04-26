@@ -5,18 +5,41 @@
 #define MAX_COL 5
 #define MAX_ACC 3
 
-// Funciones complementarias 
+// declaracion de funciones
+FILE* leer_fichero();
+int** crear_tablero(int n);
+int* crear_pistas_fila(int n, FILE* archivo);
+int* crear_pistas_columna(int n, FILE* archivo);
 int marcar_celda(int fila, int columna);
 void imprimir_matriz(int **matriz, int n, int pistas_fila[n], int pistas_columna[n]);
 void imprimir_menu();
 
 int main()
 {
-    // definicion Variables main 
-    FILE *archivo;
+    int n;
+
+    FILE* archivo = leer_fichero();
+
+    // leemos la variable n de nuestra matriz 
+    fscanf(archivo, "%i", &n);
+
+    int** matriz = crear_tablero(n);
+    int* pistas_fila = crear_pistas_fila(n, archivo);
+    int* pistas_columna = crear_pistas_columna(n, archivo);
+    
+    // cerramos el archivo
+    fclose(archivo);
+
+    printf("Jugando...\n\n");
+    imprimir_matriz(matriz, n, pistas_fila, pistas_columna);
+    imprimir_menu();
+    return 0;
+}
+
+FILE* leer_fichero(){
+ FILE *archivo;
     char filename[50];
     char path[100] = "pruebas/";
-    int n;
 
     printf("Nombre del fichero con el tablero inicial: ");
     scanf("%49s", filename);
@@ -26,7 +49,7 @@ int main()
 
     // apertura del fichero del tablero 
     archivo = fopen(path, "rb");
-    
+
     // control del error de apertura de tablero 
     while (archivo == NULL)
     {   // reseteamos las variables path y filename 
@@ -42,44 +65,39 @@ int main()
         archivo = fopen(path, "rb");
     }
 
-    // leemos la variable n de nuestra matriz 
-    fscanf(archivo, "%i", &n);
+    return archivo;
+}
 
+int** crear_tablero(int n){
     // creamos matriz de tamaño NxN 
     int **matriz = malloc(n * sizeof(int *));
 
     for (int i = 0; i < n; i++) {
         matriz[i] = malloc(n * sizeof(int));
     }
-    // leemos los datos del archivo y llenamos las pistas de filas y columnas 
-    int dato;
-    int pistas_fila[n];
-    int pistas_columna[n];
-
-    // iteramos n*2 veces sobre el fichero para obtener todas las pistas 
-    for (int i = 0; i < n*2; i++) {
-        fscanf(archivo, "%i", &dato);
-        if(i < n){
-            pistas_fila[i] = dato;
-        }else{
-            pistas_columna[i-n] = dato;
-        }
-    }
-
-    
-    // cerramos el archivo 
-    fclose(archivo);
-
-    printf("Jugando...\n\n");
-    imprimir_matriz(matriz, n, pistas_fila, pistas_columna);
-    imprimir_menu();
-    
-    return 0;
+    return matriz;
 }
 
-int marcar_celda(int fila, int columna)
-{
-    return fila + columna;
+int* crear_pistas_fila(int n, FILE* archivo){
+    int* pistas_fila = malloc(sizeof(int) * n);
+    int dato;
+
+    for (int i = 0; i < n; i++) {
+        fscanf(archivo, "%i", &dato);
+        pistas_fila[i] = dato;
+    }
+    return pistas_fila;
+}
+
+int* crear_pistas_columna(int n, FILE* archivo){
+    int* pistas_columna = malloc(sizeof(int) * n);
+    int dato;
+
+    for (int i = 0; i < n; i++) {
+        fscanf(archivo, "%i", &dato);
+        pistas_columna[i] = dato;
+    }
+    return pistas_columna;
 }
 
 void imprimir_matriz(int **matriz, int n, int pistas_fila[n], int pistas_columna[n])
@@ -155,4 +173,9 @@ void imprimir_menu(){
                 printf("Acción no válida!\n");
         }
     }
+}
+
+int marcar_celda(int fila, int columna)
+{
+    return fila + columna;
 }
