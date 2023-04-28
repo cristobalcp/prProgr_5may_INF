@@ -2,22 +2,24 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_COL 5
-#define MAX_ACC 3
+#define MIN 1
 
 // declaracion de funciones
 FILE* leer_fichero();
 int** crear_tablero(int n);
 int* crear_pistas_fila(int n, FILE* archivo);
 int* crear_pistas_columna(int n, FILE* archivo);
-int marcar_celda(int fila, int columna);
-void imprimir_matriz(int **matriz, int n, int pistas_fila[n], int pistas_columna[n]);
-void imprimir_menu();
+void imprimir_matriz(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]);
+int menu(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]);
+void obtener_posicion(int n, int min, int *fila, int *columna);
+int validar_posicion(int valor, int min, int max);
+void accion_celda(int fila, int columna, int** matriz, int accion);
+int validar_tablero(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]);
 
 int main()
 {
     int n;
-
+    int fin = 0;
     FILE* archivo = leer_fichero();
 
     // leemos la variable n de nuestra matriz 
@@ -31,8 +33,12 @@ int main()
     fclose(archivo);
 
     printf("Jugando...\n\n");
-    imprimir_matriz(matriz, n, pistas_fila, pistas_columna);
-    imprimir_menu();
+
+    while (fin == 0)
+    {
+        fin = menu(n, matriz, pistas_fila, pistas_columna);
+    }
+    
     return 0;
 }
 
@@ -100,9 +106,9 @@ int* crear_pistas_columna(int n, FILE* archivo){
     return pistas_columna;
 }
 
-void imprimir_matriz(int **matriz, int n, int pistas_fila[n], int pistas_columna[n])
+void imprimir_matriz(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
 {
-    printf("   ");
+    printf("\n   ");
     // Imprimimos índices de columnas
     for(int i = 0; i < n; i++) {
         printf("%i   ", i+1);
@@ -148,9 +154,11 @@ void imprimir_matriz(int **matriz, int n, int pistas_fila[n], int pistas_columna
     printf("\n\n");
 };
 
-void imprimir_menu(){
+int menu(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
+{
     int accion;
 
+    imprimir_matriz(n, matriz, pistas_fila, pistas_columna);
     printf("Operaciones:\n-----------\n");
     printf("1) Desmarcar un cuadrado\n");
     printf("2) Marcar un cuadrado\n");
@@ -159,23 +167,88 @@ void imprimir_menu(){
     while (1) {
         printf("\nIntroduzca la accion (1-3): ");
         scanf("%d", &accion);
+
         switch (accion) {
-            case 1:
-                printf("DESMARCAR\n");
-                break;
-            case 2:
-                printf("MARCAR\n");
-                break;
-            case 3:
+            case 1:{
+                // La primera opcion del menu debera pedir al usuario por teclado la posicion del cuadrado a
+                // desmarcar (fila y columna) y controlara que dicha posicion este dentro de los lımites del tablero
+                // (entre 1 y N). A continuacion desmarcara el cuadrado, si estaba marcado, o mostrara un mensaje
+                // de error por pantalla indicando que no es un cuadrado marcado se ha terminado el juego.
+                int fila, columna;
+            
+                // Obtener la posición del usuario
+                obtener_posicion(n, MIN, &fila, &columna);
+
+                // accion desmarcar matriz
+                accion_celda(fila, columna, matriz, accion);
+                return 0;
+            }
+            case 2:{
+                // La segunda opcion debera pedir igualmente al usuario por teclado la posicion del cuadrado
+                // a marcar (fila y columna) y controlara que dicha posicion este dentro de los lımites del tablero
+                // (entre 1 y N). A continuacion marcara el cuadrado sin comprobar si ya estaba marcado.
+                int fila, columna;
+            
+                // Obtener la posición del usuario
+                obtener_posicion(n, MIN, &fila, &columna);
+
+                // accion marcar matriz
+                accion_celda(fila, columna, matriz, accion);
+                return 0;
+            }
+            case 3:{
+                // La tercera opcion del menu saldra del programa con un mensaje de que se ha terminado el juego
                 printf("Saliendo...\n");
-                return;
+                return 1;
+            }
             default:
                 printf("Acción no válida!\n");
         }
     }
 }
 
-int marcar_celda(int fila, int columna)
+void obtener_posicion(int n, int min, int *fila, int *columna)
 {
-    return fila + columna;
+    printf("Introduzca fila (entre 1 y %i): ", n);
+    scanf("%d", fila);
+    // Validar la entrada del usuario para la fila
+    *fila = validar_posicion(*fila, min, n);
+
+    printf("Introduzca columna (entre 1 y %i): ", n);
+    scanf("%d", columna);
+    // Validar la entrada del usuario para la columna
+    *columna = validar_posicion(*columna, min, n);
+}
+
+int validar_posicion(int valor, int min, int max)
+{
+    // Validar si el valor está dentro del rango permitido
+    while (valor < min || valor > max)
+    {
+        printf("Posicion no valida!.\n");
+        printf("Introduce de nuevo el valor (entre 1 y %i): ", max);
+        // pedir al usuario el valor hasta que sea correcto
+        scanf("%d", &valor);
+    }
+    return valor;
+}
+
+void accion_celda(int fila, int columna, int** matriz, int accion)
+{
+    // accion marcar o desmarcar matriz
+    if((matriz[fila-1][columna-1] == 0 && accion == 1) || (matriz[fila-1][columna-1] == 1 && accion == 2)){
+        printf("Error! La celda ya estaba eliminada/ocupada\n");
+    }else if(accion == 1){
+        matriz[fila-1][columna-1] = 0;
+    }else if(accion == 2){
+        matriz[fila-1][columna-1] = 1;
+    }
+}
+
+int validar_tablero(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
+{
+    // Para cada una de las pistas, check if valores matriz suma == pista
+    // On 1º pista no se cumple, STOP
+    
+    return 0;
 }

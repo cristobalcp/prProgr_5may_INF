@@ -11,9 +11,11 @@
             "id": "03704b44a4f45ec3",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Teoria/Tema07.pdf"
+                "file": "Práctica de programación.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -83,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Teoria/Tema07.pdf",
+                "file": "Práctica de programación.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Teoria/Tema07.pdf",
+                "file": "Práctica de programación.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -123,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Teoria/Tema07.pdf"
+                "file": "Práctica de programación.md"
               }
             }
           }
@@ -146,6 +148,7 @@
   },
   "active": "03704b44a4f45ec3",
   "lastOpenFiles": [
+    "Teoria/Tema07.pdf",
     "Práctica de programación.md",
     "main",
     "Teoria/Tema09.pdf",
@@ -155,7 +158,6 @@
     "pruebas/k5.txt",
     "pruebas/k4.txt",
     "Teoria/Tema08.pdf",
-    "Teoria/Tema07.pdf",
     "Enunciado.pdf",
     "Untitled.md",
     "Untitled.canvas"
