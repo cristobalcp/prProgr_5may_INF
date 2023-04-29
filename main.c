@@ -1,10 +1,11 @@
+// Práctica de programación: KAKURASU - Cristóbal Cenalmor Pérez-Lago
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #define MIN 1
 
-// declaracion de funciones
+// declaracion de funciones empleadas
 FILE* leer_fichero();
 int** crear_tablero(int n);
 int* crear_pistas_fila(int n, FILE* archivo);
@@ -13,7 +14,7 @@ void imprimir_matriz(int n, int **matriz, int pistas_fila[n], int pistas_columna
 int menu(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]);
 void obtener_posicion(int n, int min, int *fila, int *columna);
 int validar_posicion(int valor, int min, int max);
-void accion_celda(int fila, int columna, int** matriz, int accion);
+int accion_celda(int fila, int columna, int** matriz, int accion);
 int validar_tablero(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]);
 
 int main()
@@ -25,19 +26,26 @@ int main()
     // leemos la variable n de nuestra matriz 
     fscanf(archivo, "%i", &n);
 
+    // creamos matriz y pistas tablero
     int** matriz = crear_tablero(n);
     int* pistas_fila = crear_pistas_fila(n, archivo);
     int* pistas_columna = crear_pistas_columna(n, archivo);
     
     // cerramos el archivo
     fclose(archivo);
-
     printf("Jugando...\n\n");
 
+    // bucle de menu hasta juego completado o opcion salir
     while (fin == 0)
     {
         fin = menu(n, matriz, pistas_fila, pistas_columna);
     }
+
+    // liberamos la memoria de la matriz
+    for (int i = 0; i < n; i++) {
+        free(matriz[i]);
+    }
+    free(matriz);
     
     return 0;
 }
@@ -58,7 +66,8 @@ FILE* leer_fichero(){
 
     // control del error de apertura de tablero 
     while (archivo == NULL)
-    {   // reseteamos las variables path y filename 
+    {   
+        // reseteamos las variables path y filename 
         strcpy(path, "pruebas/");
         strcpy(filename, "");
 
@@ -75,7 +84,7 @@ FILE* leer_fichero(){
 }
 
 int** crear_tablero(int n){
-    // creamos matriz de tamaño NxN 
+    // creamos matriz de tamaño NxN
     int **matriz = malloc(n * sizeof(int *));
 
     for (int i = 0; i < n; i++) {
@@ -88,6 +97,7 @@ int* crear_pistas_fila(int n, FILE* archivo){
     int* pistas_fila = malloc(sizeof(int) * n);
     int dato;
 
+    // leemos del archivo las pistas de las filas
     for (int i = 0; i < n; i++) {
         fscanf(archivo, "%i", &dato);
         pistas_fila[i] = dato;
@@ -99,6 +109,7 @@ int* crear_pistas_columna(int n, FILE* archivo){
     int* pistas_columna = malloc(sizeof(int) * n);
     int dato;
 
+    // leemos del archivo las pistas de las columnas
     for (int i = 0; i < n; i++) {
         fscanf(archivo, "%i", &dato);
         pistas_columna[i] = dato;
@@ -109,24 +120,24 @@ int* crear_pistas_columna(int n, FILE* archivo){
 void imprimir_matriz(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
 {
     printf("\n   ");
-    // Imprimimos índices de columnas
+    // imprimimos índices de columnas
     for(int i = 0; i < n; i++) {
         printf("%i   ", i+1);
     }
 
-    // Separadores
+    // separadores
     printf("\n");
     for(int i = 0; i < n; i++) {
         printf("_____");
     }
     printf("\n");
 
-    // Bucle de iteración sobre las dimensiones matriz
+    // bucle de iteración sobre las dimensiones matriz
     for (int i = 0; i < n; i++) {
         // Índices de filas
         printf("%i ", i+1);
 
-        // Representacion valores matriz
+        // representacion valores matriz
         for (int j = 0; j < n; j++) {
             if(matriz[i][j] == 0){
                 printf("|   ");
@@ -135,18 +146,18 @@ void imprimir_matriz(int n, int **matriz, int pistas_fila[n], int pistas_columna
             }
         }
 
-        // Pistas de filas
+        // pistas de filas
         printf("| %i", pistas_fila[i]);
         printf("\n");
     }
 
-    // Separadores
+    // separadores
     for(int i = 0; i < n; i++) {
         printf("_____");
     }
     printf("\n");
 
-    // Pistas de columnas
+    // pistas de columnas
     printf("   ");
     for(int i = 0; i < n; i++) {
         printf("%i   ", pistas_columna[i]);
@@ -170,39 +181,40 @@ int menu(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
 
         switch (accion) {
             case 1:{
-                // La primera opcion del menu debera pedir al usuario por teclado la posicion del cuadrado a
-                // desmarcar (fila y columna) y controlara que dicha posicion este dentro de los lımites del tablero
-                // (entre 1 y N). A continuacion desmarcara el cuadrado, si estaba marcado, o mostrara un mensaje
-                // de error por pantalla indicando que no es un cuadrado marcado se ha terminado el juego.
+                // opcion de desmarque de casilla, o error si ya estaba desmarcada
                 int fila, columna;
             
-                // Obtener la posición del usuario
+                // obtener la posición seleccionada por el usuario
                 obtener_posicion(n, MIN, &fila, &columna);
 
                 // accion desmarcar matriz
-                accion_celda(fila, columna, matriz, accion);
+                if(accion_celda(fila, columna, matriz, accion) == 1){
+                    return validar_tablero(n, matriz, pistas_fila, pistas_columna);
+                }
                 return 0;
             }
             case 2:{
-                // La segunda opcion debera pedir igualmente al usuario por teclado la posicion del cuadrado
-                // a marcar (fila y columna) y controlara que dicha posicion este dentro de los lımites del tablero
-                // (entre 1 y N). A continuacion marcara el cuadrado sin comprobar si ya estaba marcado.
+                // opcion de marque de casilla, o error si ya estaba marcada
                 int fila, columna;
             
-                // Obtener la posición del usuario
+                // obtener la posición seleccionada por el usuario
                 obtener_posicion(n, MIN, &fila, &columna);
 
                 // accion marcar matriz
-                accion_celda(fila, columna, matriz, accion);
+                if(accion_celda(fila, columna, matriz, accion) == 1){
+                    return validar_tablero(n, matriz, pistas_fila, pistas_columna);
+                }
                 return 0;
             }
             case 3:{
-                // La tercera opcion del menu saldra del programa con un mensaje de que se ha terminado el juego
+                // opcion de terminar el juego
                 printf("Saliendo...\n");
                 return 1;
             }
             default:
+                // opcion default
                 printf("Acción no válida!\n");
+                return 0;
         }
     }
 }
@@ -211,18 +223,18 @@ void obtener_posicion(int n, int min, int *fila, int *columna)
 {
     printf("Introduzca fila (entre 1 y %i): ", n);
     scanf("%d", fila);
-    // Validar la entrada del usuario para la fila
+    // validar la entrada del usuario para la fila
     *fila = validar_posicion(*fila, min, n);
 
     printf("Introduzca columna (entre 1 y %i): ", n);
     scanf("%d", columna);
-    // Validar la entrada del usuario para la columna
+    // validar la entrada del usuario para la columna
     *columna = validar_posicion(*columna, min, n);
 }
 
 int validar_posicion(int valor, int min, int max)
 {
-    // Validar si el valor está dentro del rango permitido
+    // validar si el valor está dentro del rango permitido
     while (valor < min || valor > max)
     {
         printf("Posicion no valida!.\n");
@@ -233,22 +245,43 @@ int validar_posicion(int valor, int min, int max)
     return valor;
 }
 
-void accion_celda(int fila, int columna, int** matriz, int accion)
+int accion_celda(int fila, int columna, int** matriz, int accion)
 {
     // accion marcar o desmarcar matriz
     if((matriz[fila-1][columna-1] == 0 && accion == 1) || (matriz[fila-1][columna-1] == 1 && accion == 2)){
         printf("Error! La celda ya estaba eliminada/ocupada\n");
+        return 0;
     }else if(accion == 1){
         matriz[fila-1][columna-1] = 0;
     }else if(accion == 2){
         matriz[fila-1][columna-1] = 1;
     }
+    return 1;
 }
 
-int validar_tablero(int n, int **matriz, int pistas_fila[n], int pistas_columna[n])
-{
-    // Para cada una de las pistas, check if valores matriz suma == pista
-    // On 1º pista no se cumple, STOP
+int validar_tablero(int n, int **matriz, int pistas_fila[n], int pistas_columna[n]) {
+    int resultado = 1;
+
+    for (int i = 0; i < n && resultado != 0; i++) {
+        int sf = 0, 
+            sc = 0, 
+            pf = pistas_fila[i], 
+            pc = pistas_columna[i];
+
+        for (int j = 0; j < n; j++) {
+            sf += matriz[i][j] * (j + 1);
+            sc += matriz[j][i] * (j + 1);
+        }
+
+        if (sf != pf || sc != pc) {
+            resultado = 0;
+        }
+    }
+
+    if (resultado == 1) {
+        printf("HAS LOGRADO LA SOLUCION!!:\n");
+        imprimir_matriz(n, matriz, pistas_fila, pistas_columna);
+    }
     
-    return 0;
+    return resultado;
 }
