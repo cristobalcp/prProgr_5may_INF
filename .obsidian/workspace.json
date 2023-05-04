@@ -4,18 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "daeb9764ecd74794",
+        "id": "5d980ef2464ddd9e",
         "type": "tabs",
         "children": [
           {
-            "id": "03704b44a4f45ec3",
+            "id": "26d29077799c4616",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "Práctica de programación.md",
-                "mode": "source",
-                "source": false
+                "file": "Enunciado.pdf"
               }
             }
           }
@@ -64,6 +62,14 @@
               "type": "starred",
               "state": {}
             }
+          },
+          {
+            "id": "a563c8c0f1feae53",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
           }
         ]
       }
@@ -85,7 +91,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Práctica de programación.md",
+                "file": "Enunciado.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +108,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Práctica de programación.md",
+                "file": "Enunciado.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +131,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Práctica de programación.md"
+                "file": "Enunciado.pdf"
               }
             }
           }
@@ -146,21 +152,20 @@
       "command-palette:Abrir paleta de comandos": false
     }
   },
-  "active": "03704b44a4f45ec3",
+  "active": "26d29077799c4616",
   "lastOpenFiles": [
+    "Teoria/Tema08.pdf",
+    "CHEAT SHEET C.md",
+    "Teoria/Tema09.pdf",
+    "Teoria/Tema07.pdf",
+    "Teoria/Tema06.pdf",
+    "Teoria/Tema05.pdf",
+    "Práctica de programación.md",
     "cenalmor_perezLago_cristobal.c",
     "main copy.c",
-    "Teoria/Tema07.pdf",
-    "Práctica de programación.md",
     "main",
-    "Teoria/Tema09.pdf",
     "pruebas/k8.txt",
     "pruebas/k9.txt",
-    "pruebas/k6.txt",
-    "pruebas/k5.txt",
-    "pruebas/k4.txt",
-    "Teoria/Tema08.pdf",
-    "Untitled.md",
     "Untitled.canvas"
   ]
 }
